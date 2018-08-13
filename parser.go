@@ -3,6 +3,7 @@ package svgparser
 import (
 	"bytes"
 	"encoding/xml"
+	"path"
 
 	"io"
 	"io/ioutil"
@@ -33,7 +34,12 @@ func NewElement(token xml.StartElement) *Element {
 	element := &Element{}
 	attributes := make(map[string]string)
 	for _, attr := range token.Attr {
-		attributes[attr.Name.Local] = attr.Value
+		key := attr.Name.Local
+		s := path.Base(attr.Name.Space)
+		if s != "." {
+			key = s + ":" + key
+		}
+		attributes[key] = attr.Value
 	}
 	element.Name = token.Name.Local
 	element.Attributes = attributes
