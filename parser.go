@@ -59,7 +59,7 @@ func (e *Element) Decode(decoder *xml.Decoder) error {
 			if err != nil {
 				return err
 			}
-
+			nextElement.Parent = e
 			e.Children = append(e.Children, nextElement)
 
 		case xml.CharData:
