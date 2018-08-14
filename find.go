@@ -1,7 +1,6 @@
 package svgparser
 
 import (
-	"log"
 	"regexp"
 )
 
@@ -18,7 +17,7 @@ func (e *Element) FindID(id string) *Element {
 	return nil
 }
 
-// FindUUIID finds the first child with the specified UUID.
+// FindUUID finds the first child with the specified UUID.
 func (e *Element) FindUUID(uuid string) *Element {
 	for _, child := range e.Children {
 		if child.UUID == uuid {
@@ -43,29 +42,18 @@ func (e *Element) FindAll(name string) []*Element {
 	return elements
 }
 
-// FilterIDs filter all children with the given ids.
+// SelectByUUIDs filter all children with the given ids.
 func (e *Element) SelectByUUIDs(uuids []string) *Element {
 	c := &Element{}
 
-	u := make(map[string]bool)
-	uniq := []string{}
 	for _, uuid := range uuids {
-		if !u[uuid] {
-			u[uuid] = true
-			uniq = append(uniq, uuid)
-		}
-	}
-
-	for _, uuid := range uniq {
 		if e.UUID == uuid {
 			*c = *e
 			c.Children = []*Element{}
 			break
 		}
 	}
-
-	c.Children = e.selectChildrenByUUIDs(uniq)
-
+	c.Children = e.selectChildrenByUUIDs(uuids)
 	return c
 }
 
@@ -110,7 +98,6 @@ func FindAllLinkedIDs(r *Element, id string) []string {
 		}
 		ids = append(ids, FindAllLinkedIDs(r, fid)...)
 	}
-	log.Println(ids)
 	return ids
 }
 
