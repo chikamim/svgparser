@@ -67,7 +67,7 @@ func (e *Element) XMLElement() xml.StartElement {
 	return xml.StartElement{xml.Name{"", e.Name}, attr}
 }
 
-// Ancestors returns ancestors elements
+// Ancestors returns ancestors' elements
 func (e *Element) Ancestors() []*Element {
 	ee := []*Element{e.Parent}
 	p := e
@@ -78,12 +78,12 @@ func (e *Element) Ancestors() []*Element {
 	return ee
 }
 
-// Descendant returns descendant elements
-func (e *Element) Descendant() []*Element {
+// Descendants returns descendants' elements
+func (e *Element) Descendants() []*Element {
 	ee := []*Element{}
 	for _, child := range e.Children {
 		ee = append(ee, child)
-		ee = append(ee, child.Descendant()...)
+		ee = append(ee, child.Descendants()...)
 	}
 	return ee
 }
@@ -93,6 +93,6 @@ func (e *Element) Generations() []*Element {
 	ee := []*Element{}
 	ee = append(ee, e.Ancestors()...)
 	ee = append(ee, e)
-	ee = append(ee, e.Descendant()...)
+	ee = append(ee, e.Descendants()...)
 	return ee
 }
