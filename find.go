@@ -101,6 +101,35 @@ func FindAllLinkedIDs(r *Element, id string) []string {
 	return ids
 }
 
+// FindAllLinkedUUIDs finds related linked ID recursively
+func FindAllLinkedUUIDs(r *Element, uuid string) []string {
+	ids := []string{}
+	f := r.FindUUID(uuid)
+	if f == nil {
+		return ids
+	}
+	id := f.Attributes["id"]
+
+	c := f
+	for c.Children != nil {
+		for _, h := range c.Children {
+			for _, id := range h.FindLinkedIDs() {
+				ids = append(ids, id)
+			}
+			c = h
+		}
+	}
+
+	ids = append(ids, f.FindLinkedIDs()...)
+	for _, fid := range ids {
+		if fid == id {
+			continue
+		}
+		ids = append(ids, FindAllLinkedIDs(r, fid)...)
+	}
+	return ids
+}
+
 // FindLinkedIDs finds related linked ID
 func (e *Element) FindLinkedIDs() []string {
 	ids := []string{}

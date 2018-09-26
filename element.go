@@ -4,7 +4,8 @@ import (
 	"encoding/xml"
 	"path"
 
-	"github.com/renstrom/shortuuid"
+	"github.com/cnf/structhash"
+	"github.com/eknkc/basex"
 )
 
 // Element is a representation of an SVG element.
@@ -20,7 +21,6 @@ type Element struct {
 // NewElement creates element from decoder token.
 func NewElement(token xml.StartElement) *Element {
 	element := &Element{}
-	element.UUID = shortuuid.New()
 	attributes := make(map[string]string)
 	for _, attr := range token.Attr {
 		key := attr.Name.Local
@@ -32,6 +32,8 @@ func NewElement(token xml.StartElement) *Element {
 	}
 	element.Name = token.Name.Local
 	element.Attributes = attributes
+	element.UUID = element.Hash()
+
 	return element
 }
 
@@ -95,4 +97,10 @@ func (e *Element) Generations() []*Element {
 	ee = append(ee, e)
 	ee = append(ee, e.Descendants()...)
 	return ee
+}
+
+// Hash returns own element unique hash string
+func (e *Element) Hash() string {
+	b64, _ := basex.NewEncoding("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	return b64.Encode(structhash.Md5(e, 1))
 }
