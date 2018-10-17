@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 )
 
 // Compose convert SVG from element
@@ -33,6 +34,9 @@ func EncodeXML(r *Element, e *xml.Encoder, excludes []string) (err error) {
 		if r.UUID == uuid {
 			return nil
 		}
+	}
+	if val, ok := r.Attributes["xlink:href"]; ok {
+		r.Attributes["xlink:href"] = strings.Replace(val, "\n", "", -1)
 	}
 
 	start := r.XMLElement()
