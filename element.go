@@ -1,10 +1,11 @@
 package svgparser
 
 import (
+	"crypto/md5"
 	"encoding/xml"
+	"fmt"
 	"path"
 
-	"github.com/cnf/structhash"
 	"github.com/eknkc/basex"
 )
 
@@ -99,8 +100,15 @@ func (e *Element) Generations() []*Element {
 	return ee
 }
 
-// Hash returns own element unique hash string
+// Hash returns element's unique hash string
 func (e *Element) Hash() string {
+	hasher := md5.New()
+	for _, g := range e.Generations() {
+		if g != nil {
+			hasher.Write([]byte(fmt.Sprintf("%v:%v", g.Name, e.Attributes)))
+		}
+	}
+	hasher.Write([]byte(fmt.Sprintf("%v:%v", e.Name, e.Attributes)))
 	b64, _ := basex.NewEncoding("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	return b64.Encode(structhash.Md5(e, 1))
+	return b64.Encode(hasher.Sum(nil))
 }
